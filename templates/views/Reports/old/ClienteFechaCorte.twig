@@ -1,0 +1,24 @@
+<div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>TIPO</th>
+            <th>CLIENTE</th>
+            <th>TELEFONO</th>
+            <th>SALDO</th>
+            <th>FECHA CORTE</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cliente in result %}
+        <tr>
+            <td>{{ cliente.tipo }}</td>
+            <td>{{ cliente.nombre }}</td>
+            <td>{{ cliente.telefono }}</td>
+            <td>{{ cliente.saldo}}</td>
+            <td>{{ cliente.fecha_corte_mensaje}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>

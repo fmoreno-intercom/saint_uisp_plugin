@@ -1,0 +1,25 @@
+# Exclude this file
+.zipignore
+.ucrm-plugin-running
+.ucrm-plugin-execution-requested
+ucrm.json
+vendor/
+data/
+public/images/sin uso
+test/
+test*
+perfilv2_deprecated/
+perfil/
+perfil_old/
+
+# Exclude reserved files
+data/config.json
+data/plugin.log
+ucrm.json
+
+# Exclude development files
+bin/composer.php
+bin/translations.php
+
+# Exclude APK
+data/apk/Netplus_-_Intercom_Servicios_base.apk

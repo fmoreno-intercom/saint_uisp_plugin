@@ -1,0 +1,7 @@
+#RewriteEngine on
+#RewriteRule ^$ proxy/ [L]
+#RewriteRule (.*) proxy/$1 [L]
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ public.php [QSA,L]

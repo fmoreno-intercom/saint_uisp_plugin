@@ -1,0 +1,84 @@
+
+<style>
+.table [data-sort] {
+      cursor: pointer;
+  }
+.table [data-sort]::after {
+      margin-left: .25rem;
+      content: url('data:image/svg+xml;utf8,<svg width=\'6\' height=\'10\' viewBox=\'0 0 6 10\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'><path fill-rule=\'evenodd\' clip-rule=\'evenodd\' d=\'M3 0L6 4H0L3 0ZM3 10L0 6H6L3 10Z\' fill=\'%238898aa\'/></svg>');
+}
+</style>
+
+<div class="" id="accordionFlushExample">
+    <div id='ReporteListWISP' class="">
+        <h2 class="" id="flush-headingOne">
+            <button class="" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+            WISP
+            </button>
+        </h2>
+        <div id="flush-collapseOne" class="" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sort" data-sort="tipo">TIPO</th>
+                        <th scope="col" class="sort" data-sort="cliente">CLIENTE</th>
+                        <th scope="col" class="sort" data-sort="telefono">TELEFONO</th>
+                        <th scope="col" class="sort" data-sort="saldo">SALDO</th>
+                    </tr>
+                </thead>
+                <tbody class="list">
+                    {% for keys, cliente in WISP %}
+                    <tr>
+                        {% set myid = keys + 1 %}
+                        <th scope="row" class="id d-none">{{ myid }}</th>
+                        <td class="tipo">{{ cliente.tipo }}</td>
+                        <td class="cliente">{{ cliente.nombre }}</td>
+                        <td class="telefono">{{ cliente.telefono }}</td>
+                        <td class="saldo">{{ cliente.saldo}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id='ReporteListFIBRA' class="">
+        <h2 class="" id="flush-headingTwo">
+            <button class="" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+            FIBRA
+            </button>
+        </h2>
+        <div id="flush-collapseTwo" class="" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sort" data-sort="tipo">TIPO</th>
+                        <th scope="col" class="sort" data-sort="cliente">CLIENTE</th>
+                        <th scope="col" class="sort" data-sort="telefono">TELEFONO</th>
+                        <th scope="col" class="sort" data-sort="saldo">SALDO</th>
+                    </tr>
+                </thead>
+                <tbody class="list">
+                    {% for keys, cliente in FIBRA %}
+                    <tr>
+                        {% set myid = keys + 1 %}
+                        <th scope="row" class="id d-none">{{ myid }}</th>
+                        <td class="tipo">{{ cliente.tipo }}</td>
+                        <td class="cliente">{{ cliente.nombre }}</td>
+                        <td class="telefono">{{ cliente.telefono }}</td>
+                        <td class="saldo">{{ cliente.saldo}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+var options = {
+  valueNames: [ 'tipo', 'cliente', 'telefono','saldo' ]
+};
+var userListWisp = new List('ReporteListWISP', options);
+var userListFibra = new List('ReporteListFIBRA', options);
+
+</script>

@@ -1,0 +1,12 @@
+{
+    "require": {
+        "ubnt/ucrm-plugin-sdk": "^0.8.1",
+        "slim/slim": "^4.10",
+        "slim/twig-view": "^3.3",
+        "slim/psr7": "^1.5",
+        "php-di/php-di": "^6.4",
+        "selective/basepath": "^2.1",
+        "amocrm/oauth2-amocrm": "^2.0",
+        "thiagoalessio/tesseract_ocr": "^2.12"
+    }
+}

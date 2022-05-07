@@ -1,0 +1,119 @@
+{% macro header_table(myheader) %}
+    <thead id="myTableHeader">
+        <tr>
+            {% for headerfield in myheader %}
+                <th data-field="{{ headerfield.H_Name }}" data-sortable="{{ headerfield.H_Sort }}">{{ headerfield.H_Title }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+{% endmacro %}
+
+{% macro VisibleColumn(H_Show = true) %}
+    {% if (H_Show is not null and H_Show is defined and H_Show == false) %}
+        {% set hidden_column = "d-none" %}
+    {% else %}
+        {% set hidden_column = "" %}
+    {% endif %}
+    {{ hidden_column | raw }}
+{% endmacro %}
+
+{% macro body_table(header, data, pagination) %}
+    {% if (header is not null and header is defined) %}
+        <tbody class="list">
+        {% for keys, mydata in data %}
+            <tr>
+                {% for keys2, myheader in header %}
+                    {% if (myheader.H_Title == "#") %}
+                        <th>{{ keys }}</th>
+                    {% else %}
+                        <td>{{ mydata[myheader.H_Name] }}</td>
+                    {% endif %}
+                    
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    {% endif %}
+{% endmacro %}
+
+{% macro table_structure_by_link() %}
+    {% set myTableStructure %}
+    <div id="nav_table">
+        <div class="container-fluid">
+            <div class="row">
+                {{ _self.table_toolbar(mytoolbarID, mytableTitle) }}
+            </div>
+        </div>
+    </div>
+    <div id="mytable" class="container-flex">
+        <table id="table_base"
+            data-toolbar="#nav_table"
+            data-toggle="table"
+            data-show-columns="false"
+            data-show-multi-sort="false"
+            data-virtual-scroll="false"
+            data-search="false"
+            data-show-export="false"
+            data-visible-search="false"
+        >
+        </table>
+    </div>
+    <div id="myLoading" class="d-none">Cargando Informacion</div>
+    {% endset %}
+    {{ myTableStructure }}
+{% endmacro %}
+
+{% macro table_structure(table, export, myheader, mybody,) %}
+    {% if (table.toolbar_id is null) %}
+        {% set mytoolbarID = "toolbar" %}
+    {% else %}
+        {% set mytoolbarID = table.toolbar_id %}
+    {% endif %}
+    {% set myTableStructure %}
+    <div id="nav_table">
+        <div class="container-fluid">
+            <div class="row">
+                {{ _self.table_toolbar(table.toolbar_id, table.title) }}
+            </div>
+        </div>
+    </div>
+    <div class="mytable bootstrap-table ">
+        <table id="{{ table.id_table }}" class="table" 
+            data-toolbar="#nav_table" 
+            data-toggle="table"  
+            data-show-toggle="true"  
+            data-loading-template="loadingTemplate"
+            data-search="{{ table.search }}"
+            
+            data-show-columns="{{ table.show_columns }}"
+            data-show-multi-sort="{{ table.sort }}"
+            data-show-export="{{ table.export }}"
+            data-virtual-scroll=true
+        >
+            {{ myheader }}
+            {{ mybody }}
+        </table>
+    </div>
+    <div id="myLoading" class="d-none">Cargando Informacion</div>
+    {% endset %}
+    {{ myTableStructure }}
+{% endmacro %}
+
+{% macro table_toolbar(toolbar_id, title) %}
+<div id="{{ toolbar_id }}">
+    <div id="nav_table_title">
+        <span>{{ title }}</span>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro create_table(table, export = false, pagination = false) %}
+    {% if (table.header is not null and table.header is defined) %}
+        {% set myheader = _self.header_table(table.header) %}
+    {% endif %}
+    {% if (table.data is not null and table.data is defined) %}
+        {% set mybody = _self.body_table(table.header, table.data, pagination) %}
+    {% endif %}
+    {% set table = _self.table_structure(table, export, myheader, mybody) %}
+    {{ table }}
+{% endmacro %}

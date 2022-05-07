@@ -1,0 +1,22 @@
+{% apply spaceless %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+<link href="https://mi.intercomservicios.com/crm/uploads/customization/favicon_ed9d4d57ada1538abfc1a765838b53ef.png?v=09933293810bdf9a77beaa18a858ba921323bc51" rel="icon">
+<title>{{ title }}</title>
+<meta name="description" content="{{ page.description }}">
+<meta name="author" content="Freddy 'Maverick2029' Moreno">
+{% include 'script.twig' %}
+{% block script %}{% endblock %}
+{% include 'css.twig' %}
+{% block css %}{% endblock %}
+</head>
+<body>
+{% block content %}{% endblock %}
+{% block final_script %}{% endblock %}
+</body>
+</html>
+{% endapply %}
