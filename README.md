@@ -7,16 +7,16 @@ Agregar Reporsitorio en el Docker de UISP en caso de error
 http://repository.fit.cvut.cz/mirrors/alpine/v3.13/main 
 http://repository.fit.cvut.cz/mirrors/alpine/v3.13/community
 
-2) Actualizar PCRE con el siguiente comando
+2) Actualizar PCRE con el siguiente comando:
 apk --no-cache add pcre-dev ${PHPIZE_DEPS}
 
-3) Instalar Driver UNIX ODBC DEV
+3) Instalar Driver UNIX ODBC DEV:
 apk --no-cache add unixodbc-dev
 
-4) Instalar PDO SQL_SRV PHP desde pecl
+4) Instalar PDO SQL_SRV PHP desde pecl:
 pecl install sqlsrv pdo_sqlsrv
 
-5) Crear INI para PDO SQL Server
+5) Crear INI para PDO SQL Server:
 vi /usr/local/etc/php/conf.d/docker-php-ext-pdo_mssql.ini
 
 Agregar
