@@ -1,0 +1,30 @@
+{
+    "version": "1",
+    "information": {
+      "name": "uisp-saint",
+      "displayName": "UISP <-> Saint",
+      "description": "Sistema de Integración UISP <-> Saint",
+      "url": "https://github.com/fmoreno-intercom/saint_uisp_plugin.git",
+      "version": "0.0.01",
+      "ucrmVersionCompliancy": {
+        "min": "2.14.0",
+        "max": null
+      },
+      "unmsVersionCompliancy": {
+        "min": "1.0.0-dev.1",
+        "max": null
+      },
+      "author": "Freddy 'Maverick2029' Moreno"
+    },
+    "configuration": [
+    ],
+    "menu": [
+        {
+          "key": "Net+ Administrador",
+          "label": "Reporte UISP <-> SAINT",
+          "type": "admin",
+          "target": "iframe",
+          "option_admin": "admin"
+        }
+    ]
+  }

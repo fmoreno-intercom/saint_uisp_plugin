@@ -94,9 +94,31 @@ class SAINT_DB {
 
     function SearchCity($city) {
         if (!is_null($city)) {
-            $mycity = array('Descrip' => $city);
-            $sql = "SELECT * FROM [IntercomAdminDb].[dbo].[SACIUDAD] WHERE Descrip = :Descrip AND Pais = 1";
+            if (is_int($city)) {
+                $myfield = 'Ciudad = :Ciudad';
+                $mycity = array('Ciudad' => $city);
+            } else {
+                $myfield = 'Descrip = :Descrip';
+                $mycity = array('Descrip' => $city);
+            }
+            $sql = sprintf("SELECT * FROM [IntercomAdminDb].[dbo].[SACIUDAD] WHERE %s AND Pais = 1", $myfield);
             $result_sql = $this->db_Admin->SelectSQL($sql, $mycity);
+            return $result_sql;    
+        } else {
+            return array('result' => -1);
+        }
+    }
+    function SearchState($state) {
+        if (!is_null($state)) {
+            if (is_int($state)) {
+                $myfield = 'Estado = :Estado';
+                $mystate = array('Estado' => $state);
+            } else {
+                $myfield = 'Descrip = :Descrip';
+                $mystate = array('Descrip' => $state);
+            }
+            $sql = sprintf("SELECT * FROM [IntercomAdminDb].[dbo].[SAESTADO] WHERE %s AND Pais = 1", $myfield);
+            $result_sql = $this->db_Admin->SelectSQL($sql, $mystate);
             return $result_sql;    
         } else {
             return array('result' => -1);
@@ -127,9 +149,9 @@ class SAINT_DB {
             $CiudadCliente = 158;
         }
         // Si Tiene direccion detalla la seleccion, sino pone la Direccion Completa
-        if (!is_null($cliente['street1']) || !is_null($cliente['street2'])) {
+        if (is_null($cliente['fullAddress'])) {
             $direccion1 = $cliente['street1'];
-            $direccion2 = $cliente['street1'];
+            $direccion2 = $cliente['street2'];
         } else {
             $direccion1 = $cliente['fullAddress'];
             $direccion2 = null;
@@ -149,13 +171,13 @@ class SAINT_DB {
         $Email = $cliente['contacts'][0]['email'];
         // Prepara Array para Saint
         $ClienteData = [
-            'CodClie' => $cliente["userIdent"],
-            'Descrip' => $Cliente,
-            'Represent' => $RepresentanteLegal,
-            'ID3' => $cliente["userIdent"],
+            'CodClie' => strtoupper($cliente["userIdent"]),
+            'Descrip' => strtoupper($Cliente),
+            'Represent' => strtoupper($RepresentanteLegal),
+            'ID3' => strtoupper($cliente["userIdent"]),
             'TipoID3' => $TipoID3,
-            'Direc1' => $direccion1,
-            'Direc2' => $direccion2,
+            'Direc1' => strtoupper($direccion1),
+            'Direc2' => strtoupper($direccion2),
             'Pais' => 1,
             'Estado' => $EstadoCliente,
             'Ciudad'  => $CiudadCliente,

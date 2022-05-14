@@ -75,6 +75,61 @@ class table_functions {
             case "fecha_corte_mensaje":
                 $columname = "Fecha Corte Servicio";
                 break;
+            case 'CodClie':
+                $columname = "Id Cliente";
+                    break;
+            case 'Descrip':
+                $columname = "Cliente";
+                    break;
+            case 'Represent':
+                $columname = "Representante Lega";
+                    break;
+            case 'ID3':
+                $columname = "Documento Legal";
+                    break;
+            case 'TipoID3';
+                $columname = "Tipo De Cliente";
+                    break;
+            case 'Direc1':
+                $columname = "Direccion Linea 1";
+                    break;
+            case 'Direc2':
+                $columname = "Direccion Linea 2";
+                    break;
+            case 'Pais':
+                $columname = "País";
+                    break;
+            case 'Estado':
+                $columname = "Estado";
+                    break;
+            case 'Ciudad':
+                $columname = "Ciudad";
+                    break;
+            case 'DiasCred':
+                $columname = "Dias de Crédito";
+                    break;
+            case 'EsCredito':
+                $columname = "Permite Crédito";
+                    break;
+            case 'EsMoneda':
+                $columname = "Tipo de Moneda";
+                    break;
+            case 'TipoPVP':
+                $columname = "Tipo de PVP";
+                    break;
+            case 'Telef':
+                $columname = "Telefono";
+                    break;
+            case 'Movil':
+                $columname = "Celular";
+                    break;
+            case 'Email':
+                $columname = "Correo Electronico";
+                    break;
+            default:
+                $columname = $column;
+                break;
+
         }
         return $columname;
     }

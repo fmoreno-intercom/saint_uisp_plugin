@@ -7,10 +7,15 @@ function CalculateBottom(object_measure = 'main') {
     return delta;
 }
 function ajaxRequest(params) {
-    $('#mytable').toggleClass('d-none');
-    $('#nav_table').toggleClass('d-none');
+    if (!$('#mytable').hasClass('d-none')) {
+        $('#mytable').toggleClass('d-none');
+        $('#nav_table').toggleClass('d-none');
+    }
+    if ($('#myLoading').hasClass('d-none')) {
+        $('#myLoading').toggleClass('d-none');
+    }
     //$('#myLoading').html(params.templateLoading);
-    $('#myLoading').toggleClass('d-none');
+    
     const table = $('#table_base');
     table.bootstrapTable("destroy");
     // data you may need

@@ -16,7 +16,7 @@ class DB_MSQLSRV {
             $uid = $db['username'];
             $pwd = $db['password'];
             $conn = new PDO(
-                "sqlsrv:server=$serverName;Database=$database",
+                "sqlsrv:server=$serverName;Database=$database;TrustServerCertificate=true",
                 $uid,
                 $pwd,
                 array(
@@ -28,9 +28,11 @@ class DB_MSQLSRV {
         }  
         catch(Exception $e)  
         {   
-            die( print_r( $e->getMessage() ) );   
+	    $error = $e->getMessage();
+            die('DB_MSQLSRV: ' . $error );   
         }  
     }
+
     function bindParams($stmt, $params) {   
         if(is_object($stmt) && ($stmt instanceof PDOStatement))
         {  

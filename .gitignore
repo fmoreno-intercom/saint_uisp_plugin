@@ -2,6 +2,7 @@
 .zipignore
 .ucrm-plugin-running
 .ucrm-plugin-execution-requested
+uisp-saint.zip
 ucrm.json
 vendor/
 data/

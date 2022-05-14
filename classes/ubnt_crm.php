@@ -510,9 +510,101 @@ class ubnt_crm {
                     $ClientUpdate[] = $value;
                 }
             }    
-            unset($_SESSION['client_uisp']);
         }
         return $ClientUpdate;
+    }
+    function NormalizeAddress($refresh = false) {
+        if ($refresh == true) $this->RefreshData(true);
+        unset($key);
+        unset($value);
+        $ClientClean = [];
+        $ClientUpdate = [];
+        $key = null;
+        $value = null;
+        $array_accent = array();
+        $array_accent[0]  = '/á/';
+        $array_accent[1]  = '/é/';
+        $array_accent[2]  = '/í/';
+        $array_accent[3]  = '/ó/';
+        $array_accent[4]  = '/ú/';
+        $array_accent[5]  = '/ñ/';
+        $array_accent_change = array();
+        $array_accent_change[0]  = 'Á';
+        $array_accent_change[1]  = 'É';
+        $array_accent_change[2]  = 'Í';
+        $array_accent_change[3]  = 'Ó';
+        $array_accent_change[4]  = 'Ú';
+        $array_accent_change[5]  = 'Ñ';
+
+        $ClientUisp = $this->client_uisp; // revisar el valor $key y $value y por que da errot
+        foreach($ClientUisp as $key => $value) {
+            /*if (strpos($value['street1'], 'ó') > 0) {
+                $t = 1;
+            }*/ // Debug
+            $clean = false;
+            $regex_find = [];
+            $regex_find_latim = [];
+            if (!is_null($value['city'])) {
+                $Ciudad = strtoupper($value['city']);
+                $CantCiudad = strlen($Ciudad);
+                $regex_replace = '/(ESTADO LARA|EDO LARA|.EDO LARA|'.$Ciudad.', LARA|'.$Ciudad.' LARA|BARQUISIMETO, LARA|BARQUISIMETO LARA)/i';
+            }             
+            $direccion1 = trim(strtoupper($value['street1']));
+            $direccion2 = trim(strtoupper($value['street2']));
+            $direccionfull = trim(strtoupper($value['fullAddress']));
+            preg_match($regex_replace, $direccion1, $regex_find);
+            preg_match('/([áéíóú])/u', $direccion1, $regex_find_latim, PREG_OFFSET_CAPTURE);
+            if (is_null($direccion1) && !is_null($direccionfull)) {
+                $clean = true;
+            } 
+            if ($direccion1 == $direccion2 && !is_null($direccion1) && $direccion1 != "") {
+                $clean = true;
+                $direccion2 = null;
+            }
+            if (!is_null($direccion2) && $direccion2 != "") {
+                $clean = true;
+                $direccion1 = $direccion1 . ' ' . $direccion2;
+                $direccion2 = null;
+            }
+            if ((strpos($direccion1, $Ciudad) == (strlen($direccion1) - $CantCiudad) || count($regex_find) >= 2)  && isset($Ciudad)) {
+                $clean = true;
+                if (strpos($direccion1, $Ciudad) == (strlen($direccion1) - $CantCiudad)) {
+                    $direccion1 = substr($direccion1, 0, (strlen($direccion1) - $CantCiudad));
+                } else {
+                    $direccion1 = preg_replace($regex_replace, '', $direccion1);
+                }
+                
+            }
+            if (count($regex_find_latim) > 0) {
+                $clean = true;
+                $direccion1 = preg_replace($array_accent, $array_accent_change, $direccion1);
+            }
+            if ($clean) {
+                $direccion1 = trim(preg_replace('/\s+/', ' ', $direccion1)); // elimina el doble espacio
+                $direccionfull = trim(preg_replace('/\s+/', ' ', $direccionfull)); // elimina el doble espacio
+                $value['city'] = (isset($Ciudad)) ? $Ciudad : "Barquisimeto";
+                $value['street1'] = trim($direccion1);
+                $value['street2'] = (!is_null($direccion2)) ? trim($direccion2) : null;
+                $ZipCode = (!is_null($value['zipCode'])) ? ", ".$value['zipCode'] : "";
+                $direccionfull = $value['street1'] . ', ' . $value['city'] . $ZipCode;
+                $value['fullAddress'] = $direccionfull;
+                $ClientClean[] = $value;
+            }
+        }
+        if (count($ClientClean) > 0) {
+            foreach($ClientClean as $key => $value) {
+                $ClientId = $value["id"];
+                $fieldUpdate = array('street1' => $value['street1'], 'street2' => $value['street2'], 'fullAddress' => $value['fullAddress']);
+                //$result = true;
+                $result = $this->ClientUpdate($ClientId, $fieldUpdate);
+                if ($result != false ) {
+                    $value['Cambiado'] = true;
+                    $ClientUpdate[] = $value;
+                }
+            }
+        }
+        return $ClientUpdate;
+
     }
     function ClientUpdate($ClientId, $fieldUpdate) {
         $url = 'clients/'.$ClientId;

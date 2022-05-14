@@ -6,13 +6,21 @@ use Slim\Views\TwigMiddleware;
 
 // Add Twig-View Middleware
 $app->add(TwigMiddleware::createFromContainer($app));
-
+$url = $_SERVER['PHP_SELF'];
+$url = preg_replace('(\/public.php)','',$url);
+$app->setBasePath($url);
 // Routes
 $app->get('/', function (Request $request, Response $response, $args) {
     $response->getBody()->write("DEMO");
     return $response;
 });
 $app->any('/amoCRM.php', function (Request $request, Response $response, $args) {
+        //$variable_query["leads"]
+    //$variable_query["account"]
+    //$variable_query["leads"]["add"]
+    /*if (isset($variable_query["leads"]) || isset($variable_query["account"])) {
+        $page = "amoCRM";
+    }*/
     $methods = $request->getMethod();
     switch($methods){
         case 'GET':
@@ -38,7 +46,8 @@ $app->any('/amoCRM.php', function (Request $request, Response $response, $args) 
 });
 
 $app->any('/public.php', function (Request $request, Response $response, $args) {
-    $opciones = new myRoute_Twig($this);
+    $development = true;
+    $opciones = new myRoute_Twig($this, $development);
     $tableFunc = $this->get('table_functions');
     $methods = $request->getMethod();
     switch($methods){
@@ -51,17 +60,17 @@ $app->any('/public.php', function (Request $request, Response $response, $args) 
     }
     $page = (isset($variable_query['page'])) ? $variable_query['page'] : -1;
     $mes = (isset($variable_query['Mes'])) ? $variable_query['Mes'] : date("m");
-    $development = false;
-    //$variable_query["leads"]
-    //$variable_query["account"]
-    //$variable_query["leads"]["add"]
-    /*if (isset($variable_query["leads"]) || isset($variable_query["account"])) {
-        $page = "amoCRM";
-    }*/
+    $security_view = $opciones->check_security();
+    $security_edit = $opciones->check_security('EDIT');
+    $security_sync = $opciones->check_security('SYNC');
+    if ($security_view == false) {
+        if (! headers_sent()) {
+            header("HTTP/1.1 403 Forbidden");
+        } 
+        die('Lo siento, no tiene permiso para acceder a esta pagina');
+    } 
+
     switch ($page) {
-        /*case 'amoCRM': 
-            $t = 1;
-            break;*/
         case 'ClienteJson':
             $telefono = (isset($variable_query['telefono'])) ? $variable_query['telefono'] : -1;
             $uisp_crm = $this->get('ubnt_crm');
@@ -80,12 +89,14 @@ $app->any('/public.php', function (Request $request, Response $response, $args) 
             $myTwig = $opciones->SyncFac();
             $response->getBody()->write($myTwig);
             break;
-        case 'ReporteClienteExportar':
-            $result = $opciones->PrepareQuote();
-            if ($page == 'ReporteClienteExportar') {
-                $table_report = $opciones->RPT_ClienteExport($result["ClienteExportar"]);
-            }
+        case 'Normalize':
+            $myTwig = $opciones->NomalizeUisp();
+            $response->getBody()->write($myTwig);
             break;
+        case 'ReporteClienteFechaCorte':
+            $myTwig = $opciones->ClienteFechaCorte($mes, $variable_query['title']);
+            break;
+        // Respuesta tipo JSON
         case 'ReporteClienteFechaCorte2':
             $result = $opciones->ClienteFechaCorte($mes);
             $header = $result["Template_Variable"]["table"]["header"]['columns'];
@@ -93,28 +104,27 @@ $app->any('/public.php', function (Request $request, Response $response, $args) 
             $opciones_table  = $result["Template_Variable"]["table"]["options"];
             $myTwig = $opciones->PrepareTableJson($header, 'data', $data, $opciones_table);
             break;
-        case 'ReporteClienteFechaCorte':
-            $myTwig = $opciones->ClienteFechaCorte($mes, $variable_query['title']);
-            break;
         case 'ReporteClientesConexion':
-            $myTwig = $opciones->ReporteClientesConexion();
-            $jsonarray = array(
-                'columns' => $myTwig["Template_Variable"]["table"]["header"]['columns'], 
-                'multiplerows'=> [
-                    'FIBRA' => $myTwig["Template_Variable"]["FIBRA"],
-                    'WISP' => $myTwig["Template_Variable"]["WISP"]
-                ]
-                /*'data' => $result["Template_Variable"]["table"]["data"]*/
-            );
-            $myTwig = [
-                'Template' => 'Reports/ReportJson.twig',
-                'Template_Variable' => [
-                    'Table_JSON' => $jsonarray
-                ]
+            $result = $opciones->ReporteClientesConexion();
+            $header = $result["Template_Variable"]["table"]["header"]['columns'];
+            $data = [
+                'FIBRA' => $result["Template_Variable"]["FIBRA"],
+                'WISP' => $result["Template_Variable"]["WISP"]
             ];
+            $myTwig = $opciones->PrepareTableJson($header, 'multiplerows', $data);
             break;
         case 'ReporteClientesIPTV':
             $myTwig = $opciones->ReporteClientesIPTV();
+            break;
+        case 'ReporteClienteExportar':
+            $result = $opciones->PrepareQuote();
+            if ($page == 'ReporteClienteExportar') {
+                $table_report = $opciones->RPT_ClienteExport($result["ClienteExportar"]);
+            }
+            $header = $table_report["Template_Variable"]["table"]["header"]['columns'];
+            $data = $table_report["Template_Variable"]["table"]["data"];
+            $opciones_table  = $table_report["Template_Variable"]["table"]["options"];
+            $myTwig = $opciones->PrepareTableJson($header, 'data', $data, $opciones_table);
             break;
         case 'Test':
              $columntest = [
@@ -143,6 +153,19 @@ $app->any('/public.php', function (Request $request, Response $response, $args) 
                 'Template' => 'home/index.twig',
                 'Template_Variable' => isset($variable_query['user']) ? [ 'name' =>  $variable_query['user']] : null
             ];
+    }
+    if (isset($myTwig['Template'])) {
+        $myTwig['Template_Variable']['Security'] = $_SESSION['security'];
+        $myTemplate = $myTwig['Template'];
+        $myVariable = isset($myTwig['Template_Variable']) ? $myTwig['Template_Variable'] : [];
+        return $this->get('view')->render($response, $myTemplate, $myVariable);    
+    } else {
+        $values_body = $response->getBody();
+        $final = ($values_body->getsize() != null) ? $response : $response->getBody()->write("Sin Repuesta");
+        return $final;
+    }
+});
+
             /*$myTwig['Template_Variable']['table'] = [
                 'title' => '',
                 'id_table' => 'table_base',
@@ -183,15 +206,3 @@ $app->any('/public.php', function (Request $request, Response $response, $args) 
                     ],
                 ];
             }*/
-    }
-    if (isset($myTwig['Template'])) {
-        $myTemplate = $myTwig['Template'];
-        $myVariable = isset($myTwig['Template_Variable']) ? $myTwig['Template_Variable'] : [];
-        return $this->get('view')->render($response, $myTemplate, $myVariable);    
-    } else {
-        $values_body = $response->getBody();
-        $final = ($values_body->size != null) ? $response : $response->getBody()->write("Sin Repuesta");
-        return $final;
-    }
-});
-

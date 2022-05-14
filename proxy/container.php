@@ -32,14 +32,16 @@ $container->set('db_admin_saint', function ($c) {
 // CALL UISP Security
 $container->set('ubnt_security', function ($c) {
     // https://github.com/Ubiquiti-App/UCRM-plugins/blob/master/docs/security.md
-    try {
-        $security = \Ubnt\UcrmPluginSdk\Service\UcrmSecurity::create();
-        $user = $security->getUser();
-        return $user;    
-    } catch (Exception $e) {
-        // If there is an error, return false.
-        return false;
-    }
+        try {
+            //$security = (is_null($user)) ? \Ubnt\UcrmPluginSdk\Service\UcrmSecurity::create() : \Ubnt\UcrmPluginSdk\Service\UcrmSecurity::create($user);
+            $security = \Ubnt\UcrmPluginSdk\Service\UcrmSecurity::create();
+            //$user = $security->getUser();
+            return $security;    
+        } catch (Exception $e) {
+            // If there is an error, return false.
+            return false;
+        };  
+
 });
 // CALL UISP NETWORK
 $container->set('ubnt_nms', function ($c) {
